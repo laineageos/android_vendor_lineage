@@ -20,10 +20,21 @@ LINEAGE_TARGET_PACKAGE := $(PRODUCT_OUT)/lineage-$(LINEAGE_VERSION).zip
 
 SHA256 := prebuilts/build-tools/path/$(HOST_PREBUILT_TAG)/sha256sum
 
+ESC := $(shell printf '\033')
+BOLD := $(ESC)[1m
+GREEN := $(ESC)[1;32m
+RESET := $(ESC)[0m
+
 $(LINEAGE_TARGET_PACKAGE): $(INTERNAL_OTA_PACKAGE_TARGET)
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(LINEAGE_TARGET_PACKAGE)
 	$(hide) $(SHA256) $(LINEAGE_TARGET_PACKAGE) | sed "s|$(PRODUCT_OUT)/||" > $(LINEAGE_TARGET_PACKAGE).sha256sum
-	@echo "Package Complete: $(LINEAGE_TARGET_PACKAGE)" >&2
+	@echo "" >&2
+	$(hide) ./vendor/lineage/build/tasks/navi_logo.sh
+	@echo "$(BOLD)> BUILD COMPLETED.$(RESET)" >&2
+	@echo "$(BOLD)> $(GREEN)$(LINEAGE_TARGET_PACKAGE)$(RESET)" >&2
+	$(hide) ./vendor/lineage/build/tasks/rquotes.sh | while IFS= read -r line; do \
+		echo "$(BOLD)> $$line$(RESET)" >&2; \
+	done
 
 .PHONY: bacon
 bacon: $(LINEAGE_TARGET_PACKAGE) $(DEFAULT_GOAL)
